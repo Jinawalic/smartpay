@@ -6,9 +6,9 @@ import { Footer } from "@/components/layout/Footer";
 import { mockProducts } from "@/lib/data";
 import Link from "next/link";
 import { ChevronRight } from "lucide-react";
-import React from "react";
+import React, { Suspense } from "react";
 
-export default function ClearanceDealsPage() {
+function DealsContent() {
   const searchParams = useSearchParams();
   const categoryParam = searchParams.get("cat") || "all";
 
@@ -113,5 +113,17 @@ export default function ClearanceDealsPage() {
         .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
       `}} />
     </div>
+  );
+}
+
+export default function ClearanceDealsPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+      </div>
+    }>
+      <DealsContent />
+    </Suspense>
   );
 }
