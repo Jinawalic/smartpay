@@ -30,7 +30,7 @@ export default function FirsDashboard() {
             <Activity className="h-4 w-4 text-primary" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-primary">${stats.totalTaxCollected.toLocaleString()}</div>
+            <div className="text-2xl font-bold text-primary">₦ {stats.totalTaxCollected.toLocaleString()}</div>
             <p className="text-xs text-muted-foreground mt-1">From a fixed 10% rate</p>
           </CardContent>
         </Card>
@@ -70,8 +70,8 @@ export default function FirsDashboard() {
                            <td className="px-6 py-4 font-medium">{order.sellerId}</td>
                            <td className="px-6 py-4">{order.id}</td>
                            <td className="px-6 py-4 text-muted-foreground">{new Date(order.createdAt).toLocaleDateString()}</td>
-                           <td className="px-6 py-4 font-medium">${order.amount.toLocaleString()}</td>
-                           <td className="px-6 py-4 text-right font-medium text-success">${order.taxAmount.toLocaleString()}</td>
+                           <td className="px-6 py-4 font-medium">₦ {order.amount.toLocaleString()}</td>
+                           <td className="px-6 py-4 text-right font-medium text-success">₦ {order.taxAmount.toLocaleString()}</td>
                         </tr>
                      ))}
                   </tbody>

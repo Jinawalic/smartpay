@@ -1,135 +1,145 @@
 "use client";
 
 import React from "react";
-import { PublicNavbar } from "@/components/layout/PublicNavbar";
-import { Footer } from "@/components/layout/Footer";
-import { TopSellingItems } from "@/components/product/TopSellingItems";
-import { Package, ChevronLeft, Calendar, User, Search, MapPin, Truck } from "lucide-react";
+import { Package, ChevronLeft, Calendar, User, Search, MapPin, Truck, CheckCircle2 } from "lucide-react";
 import Link from "next/link";
-import { mockOrders } from "@/lib/data";
+import { mockOrders, mockProducts } from "@/lib/data";
 
 export default function OrdersPage() {
-  return (
-    <div className="min-h-screen bg-gray-50 flex flex-col font-sans">
-      <PublicNavbar />
+  const [activeStatus, setActiveStatus] = React.useState("All");
 
-      <main className="flex-1 max-w-4xl mx-auto w-full px-4 py-8">
-        <div className="flex flex-col gap-6 mb-8">
-          <div className="flex items-center gap-4">
-            <Link href="/buyer" className="p-2 hover:bg-slate-100 rounded-full transition-colors">
-              <ChevronLeft className="w-6 h-6" />
-            </Link>
-            <h1 className="text-3xl font-extrabold text-slate-800 tracking-tight">Your Orders</h1>
-          </div>
-          
-          <div className="flex overflow-x-auto gap-3 pb-2 hide-scrollbar">
-            {["All", "Pending", "Shipped", "Delivered", "Completed"].map((status) => (
-              <button 
-                key={status} 
-                className={`whitespace-nowrap px-6 py-2.5 rounded-full text-sm font-bold border transition-all ${
-                   status === "All" ? "bg-primary text-white border-primary shadow-lg shadow-primary/30" : "bg-white text-slate-600 border-slate-200 hover:border-primary/50"
-                }`}
+  const filteredOrders = mockOrders.filter((order) => {
+    if (activeStatus === "All") return true;
+    return order.status.toLowerCase() === activeStatus.toLowerCase();
+  });
+
+  const statuses = ["All", "Pending", "Shipped", "Completed"];
+
+  return (
+    <div className="space-y-8">
+      <div className="flex flex-col gap-2">
+        <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Order History</h1>
+        <p className="text-slate-500 text-sm font-medium">
+          Check the status of recent orders, manage returns, and discover similar products
+        </p>
+      </div>
+
+      {/* Global Filter Bar - Styled like the card header in the image */}
+      <div className="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm">
+        <div className="p-3 bg-slate-50/50 flex flex-wrap items-center justify-between gap-4">
+          <div className="flex bg-white rounded-lg border border-slate-200 p-0.5">
+            {statuses.map((status) => (
+              <button
+                key={status}
+                onClick={() => setActiveStatus(status)}
+                className={`px-6 py-2 rounded-md text-xs font-bold transition-all ${activeStatus === status
+                  ? "bg-primary text-white shadow-sm"
+                  : "text-slate-500 hover:text-primary hover:bg-slate-50"
+                  }`}
               >
                 {status}
               </button>
             ))}
           </div>
-        </div>
-
-        {mockOrders.length > 0 ? (
-          <div className="space-y-6">
-            {mockOrders.map((order) => (
-              <Card key={order.id} order={order} />
-            ))}
+          <div className="hidden md:flex gap-4 px-4 text-slate-400 text-[10px] font-bold uppercase tracking-widest items-center border-l border-slate-200 ml-4">
+            <div className="flex flex-col">
+              <button className="px-5 py-2 rounded-lg border border-slate-300 bg-white text-slate-700 text-xs font-bold hover:bg-slate-50 transition-colors shadow-sm">
+                View Invoice
+              </button>
+            </div>
           </div>
-        ) : (
-          <section className="bg-white rounded-3xl shadow-sm border border-slate-100 overflow-hidden text-center py-20 px-8">
-             <div className="w-24 h-24 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-8 animate-bounce">
-                <Package className="w-12 h-12 text-primary" />
-             </div>
-             <h2 className="text-2xl font-extrabold text-slate-800 mb-4">No orders placed yet</h2>
-             <p className="text-sm text-slate-500 max-w-sm mx-auto mb-10 leading-relaxed font-medium">
-               Explore our vast category of items and start filling your cart!
-             </p>
-             <Link href="/">
-               <button className="bg-primary hover:bg-primary/90 text-white font-bold py-4 px-12 rounded-2xl transition-all shadow-xl shadow-primary/30 active:scale-95">
-                 Start Shopping
-               </button>
-             </Link>
-          </section>
-        )}
-
-        {/* Top Selling Section as requested */}
-        <div className="mt-16">
-           <TopSellingItems />
         </div>
-      </main>
+      </div>
 
-      <Footer />
+      <div className="space-y-1">
+        {filteredOrders.length > 0 ? (
+          filteredOrders.map((order) => (
+            <OrderCard
+              key={order.id}
+              order={order}
+              activeStatus={activeStatus}
+              setActiveStatus={setActiveStatus}
+            />
+          ))
+        ) : (
+          <div className="bg-white rounded-2xl border border-dashed border-slate-200 p-20 text-center">
+            <Package className="w-12 h-12 text-slate-300 mx-auto mb-4" />
+            <h3 className="text-lg font-bold text-slate-800 mb-2">No {activeStatus !== "All" ? activeStatus : ""} orders found</h3>
+            <p className="text-slate-500 text-sm mb-6">We couldn't find any orders matching your current filter.</p>
+            <button
+              onClick={() => setActiveStatus("All")}
+              className="text-primary font-bold text-sm hover:underline"
+            >
+              Clear all filters
+            </button>
+          </div>
+        )}
+      </div>
+
+      <style dangerouslySetInnerHTML={{
+        __html: `
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+      `}} />
     </div>
   );
 }
 
-function Card({ order }: { order: any }) {
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case "pending": return "bg-orange-100 text-orange-600 border-orange-200";
-      case "shipped": return "bg-blue-100 text-blue-600 border-blue-200";
-      case "delivered": return "bg-green-100 text-green-600 border-green-200";
-      case "completed": return "bg-emerald-600 text-white border-emerald-700";
-      default: return "bg-slate-100 text-slate-600 border-slate-200";
-    }
-  };
+function OrderCard({ order, activeStatus, setActiveStatus }: { order: any, activeStatus: string, setActiveStatus: (s: string) => void }) {
+  const product = mockProducts.find(p => p.id === order.productId) || mockProducts[0];
+  const statuses = ["All", "Pending", "Shipped", "Completed"];
 
   return (
-    <div className="bg-white rounded-3xl border border-slate-100 shadow-sm overflow-hidden hover:shadow-xl transition-all duration-300 group">
-       <div className="p-6 border-b border-slate-50 flex flex-wrap justify-between items-center bg-slate-50/50">
-          <div className="flex flex-col">
-             <span className="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest mb-1">Order Tracking No.</span>
-             <span className="font-mono font-bold text-slate-800 text-lg group-hover:text-primary transition-colors">{order.trackingCode}</span>
+    <div className="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm transition-all duration-300">
+      {/* Order Item - Matching image layout */}
+      <div className="p-6 md:p-8">
+        <div className="flex flex-col md:flex-row gap-8">
+          {/* Image */}
+          <div className="w-28 md:w-28 h-28 md:h-28 bg-white rounded-xl border border-slate-100 p-3 flex items-center justify-center shrink-0 shadow-inner">
+            <img
+              src={product.image}
+              className="w-28 h-28 object-contain mix-blend-multiply"
+              alt={product.name}
+            />
           </div>
-          <div className={`px-5 py-2 rounded-full text-xs font-black uppercase tracking-tight border shadow-sm ${getStatusColor(order.status)}`}>
-             {order.status}
-          </div>
-       </div>
-       
-       <div className="p-8 grid md:grid-cols-2 gap-10">
-          <div className="flex gap-6">
-             <div className="relative w-28 h-28 aspect-square rounded-2xl overflow-hidden bg-white border border-slate-100 shrink-0 p-3 shadow-inner group-hover:scale-105 transition-transform">
-                <img 
-                  src="https://images.unsplash.com/photo-1629198688000-71f23e745b6e?w=200&q=80" 
-                  className="w-full h-full object-contain mix-blend-multiply" 
-                  alt="Order item"
-                />
-             </div>
-             <div className="flex flex-col justify-center">
-                <h4 className="font-extrabold text-slate-800 text-lg leading-tight mb-2 line-clamp-1">Premium Order Item</h4>
-                <div className="flex items-center gap-2 text-slate-500 text-xs font-bold mb-4">
-                   <Calendar className="w-3.5 h-3.5" />
-                   <span>Placed: 12 July 2024</span>
+
+          {/* Product Details */}
+          <div className="flex-1 flex flex-col justify-between">
+            <div className="flex flex-col sm:flex-row justify-between items-start gap-4">
+              <div className="space-y-1">
+                <h4 className="font-semibold text-slate-900 text-sm md:text-sm tracking-tight uppercase">{product.name}</h4>
+                <div className="flex flex-col gap-1 mt-3 text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+                  <span>Quantity: 01</span>
+                  <span>Escrow Tracking: #{order.id || "ORD-277829"}</span>
                 </div>
-                <div className="text-2xl font-black text-primary">₦ {order.amount.toLocaleString()}</div>
-             </div>
-          </div>
-          
-          <div className="flex flex-col justify-center border-l border-slate-50 pl-10">
-             <div className="flex items-start gap-4 mb-6">
-                <div className="mt-1 bg-slate-100 p-2.5 rounded-xl text-slate-500">
-                   <MapPin className="w-5 h-5" />
+              </div>
+              <span className="text-sm md:text-sm font-bold text-slate-900">₦ {product.price.toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
+            </div>
+
+            {/* Status & Actions - Bottom row */}
+            <div className="flex flex-wrap items-center justify-between mt-2 pt-2 border-t border-slate-50 md:mt-2 md:pt-4">
+              <div className="flex items-center gap-3">
+                <div className={`h-4 w-4 rounded-full flex items-center justify-center ${order.status === 'completed' ? 'bg-success' : 'bg-primary'}`}>
+                  <CheckCircle2 className="w-4 h-4 text-white" />
                 </div>
-                <div className="flex flex-col">
-                   <span className="text-[10px] font-black text-slate-400 uppercase tracking-tighter mb-0.5">Shipping Destination</span>
-                   <span className="text-sm font-bold text-slate-700 leading-snug">{order.deliveryAddress || "Lekki Phase 1, Lagos, Nigeria"}</span>
-                </div>
-             </div>
-             <Link href={`/buyer/track?id=${order.id}`} className="w-full">
-               <button className="w-full bg-slate-900 hover:bg-black text-white font-bold py-4 px-6 rounded-2xl flex items-center justify-center gap-3 transition-all shadow-lg shadow-slate-200 active:scale-[0.98]">
-                 <Truck className="w-5 h-5" />
-                 <span>Track & View Details</span>
-               </button>
-             </Link>
+                <span className="text-sm text-slate-700">
+                  {order.status === 'completed' ? 'Delivered' : order.status.charAt(0).toUpperCase() + order.status.slice(1)} on {new Date(order.createdAt).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
+                </span>
+              </div>
+
+              <div className="flex items-center gap-8 mt-4 sm:mt-0">
+                <Link href={`/product/${product.id}`} className="text-[10px] uppercase font-black tracking-[0.2em] text-primary hover:underline">
+                  View Product
+                </Link>
+                <div className="hidden sm:block w-[1px] h-4 bg-slate-200" />
+                <button className="text-[10px] uppercase font-black tracking-[0.2em] text-primary hover:underline">
+                  Buy Again
+                </button>
+              </div>
+            </div>
           </div>
-       </div>
+        </div>
+      </div>
     </div>
   );
 }

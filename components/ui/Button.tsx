@@ -16,7 +16,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       secondary: "bg-secondary text-secondary-foreground hover:bg-secondary/80",
       outline: "border border-border bg-transparent hover:bg-accent hover:text-accent-foreground",
       ghost: "hover:bg-accent hover:text-accent-foreground",
-      destructive: "bg-destructive text-destructive-foreground hover:bg-destructive/90",
+      destructive: " text-destructive-foreground hover:bg-destructive/90",
       success: "bg-success text-success-foreground hover:bg-success/90",
     };
 
@@ -39,12 +39,12 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         disabled={isLoading || props.disabled}
         {...props}
       >
-         {isLoading ? (
-            <>
-               <Loader2 className="mr-2 h-4 w-4 animate-spin shrink-0" />
-               {children}
-            </>
-         ) : children}
+        {isLoading ? (
+          <>
+            <Loader2 className="mr-2 h-4 w-4 animate-spin shrink-0" />
+            {children}
+          </>
+        ) : children}
       </button>
     );
   }

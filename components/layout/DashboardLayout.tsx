@@ -4,7 +4,7 @@ import * as React from "react";
 import { UserRole } from "@/lib/data";
 import { Navbar } from "./Navbar";
 import { NavItem, Sidebar } from "./Sidebar";
-import { ShieldCheck, LayoutDashboard, ShoppingCart, Activity, History, Users, Search, Truck, LogOut, Wallet, FileText, Package } from "lucide-react";
+import { ShieldCheck, LayoutDashboard, ShoppingCart, Activity, History, Users, Search, Truck, LogOut, Wallet, FileText, Package, Settings } from "lucide-react";
 
 
 interface DashboardLayoutProps {
@@ -20,6 +20,7 @@ const getNavigationItems = (role: UserRole): NavItem[] => {
         { title: "Transactions", href: "/admin/transactions", icon: History },
         { title: "Users", href: "/admin/users", icon: Users },
         { title: "Disputes", href: "/admin/disputes", icon: ShieldCheck },
+        { title: "Settings", href: "/admin/settings", icon: Settings },
       ];
     case "buyer":
       return [
@@ -27,20 +28,21 @@ const getNavigationItems = (role: UserRole): NavItem[] => {
         { title: "Products", href: "/buyer/products", icon: Package },
         { title: "Cart", href: "/buyer/cart", icon: ShoppingCart },
         { title: "Track Order", href: "/buyer/track", icon: Search },
-        { title: "Order History", href: "/buyer/history", icon: History },
+        { title: "Order History", href: "/buyer/orders", icon: History },
       ];
     case "seller":
       return [
         { title: "Dashboard", href: "/seller", icon: LayoutDashboard },
         { title: "My Products", href: "/seller/products", icon: Package },
         { title: "Orders", href: "/seller/orders", icon: ShoppingCart },
+        { title: "Riders", href: "/seller/riders", icon: Truck },
         { title: "Wallet", href: "/seller/wallet", icon: Wallet },
       ];
     case "rider":
       return [
         { title: "Dashboard", href: "/rider", icon: LayoutDashboard },
-        { title: "Deliveries", href: "/rider/deliveries", icon: Truck },
         { title: "History", href: "/rider/history", icon: History },
+        { title: "Settings", href: "/rider/settings", icon: Settings },
       ];
     case "firs":
       return [

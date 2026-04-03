@@ -63,7 +63,7 @@ export default function TrackOrderPage() {
                  </div>
                  <div className="flex-1">
                     <CardTitle className="text-xl">TXN-829312</CardTitle>
-                    <CardDescription>MacBook Pro M3 • Total: $1,999</CardDescription>
+                    <CardDescription>MacBook Pro M3 • Total: ₦ 1,999</CardDescription>
                  </div>
                  <Button variant="outline" size="sm" onClick={copyToClipboard} className="flex items-center gap-2">
                     <Copy className="h-4 w-4" />

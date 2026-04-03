@@ -6,6 +6,7 @@ import { ShoppingCart, User, Search, Package, Mail, Star, Ticket, Heart, Store, 
 import { Button } from "@/components/ui/Button";
 import { useCart } from "@/components/CartProvider";
 import { useUser } from "@/components/UserProvider";
+import { useRouter } from "next/navigation";
 import { Input } from "@/components/ui/Input";
 import { cn } from "@/lib/utils";
 
@@ -14,6 +15,13 @@ export function PublicNavbar() {
   const { user, isLoggedIn, logout } = useUser();
   const [searchTerm, setSearchTerm] = React.useState("");
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
+  const router = useRouter();
+
+  const handleSearch = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter" && searchTerm.trim()) {
+      router.push(`/search?q=${encodeURIComponent(searchTerm.trim())}`);
+    }
+  };
 
   const menuItems = [
     { label: "Orders", icon: Package, href: "/buyer/orders" },
@@ -49,6 +57,7 @@ export function PublicNavbar() {
             className="pl-10 bg-muted/50 border-none focus-visible:ring-primary h-10 rounded-lg"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
+            onKeyDown={handleSearch}
           />
         </div>
 
@@ -106,6 +115,7 @@ export function PublicNavbar() {
             className="pl-10 bg-muted/50 border-none focus-visible:ring-primary h-10 w-full rounded-lg"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
+            onKeyDown={handleSearch}
           />
         </div>
       </div>

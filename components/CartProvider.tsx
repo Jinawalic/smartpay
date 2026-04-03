@@ -2,6 +2,7 @@
 
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { Product } from "@/lib/data";
+import { useToast } from "@/components/ToastProvider";
 
 interface CartItem extends Product {
   quantity: number;
@@ -20,6 +21,7 @@ const CartContext = createContext<CartContextType | undefined>(undefined);
 
 export function CartProvider({ children }: { children: React.ReactNode }) {
   const [cart, setCart] = useState<CartItem[]>([]);
+  const { showToast } = useToast();
 
   // Optional: Load from local storage on mount
   useEffect(() => {
@@ -46,10 +48,13 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       }
       return [...prev, { ...product, quantity }];
     });
+    showToast(`${quantity} ${product.name} added to cart!`, "success");
   };
 
   const removeFromCart = (productId: string) => {
+    const item = cart.find(i => i.id === productId);
     setCart((prev) => prev.filter((item) => item.id !== productId));
+    if (item) showToast(`${item.name} removed from cart.`, "info");
   };
 
   const updateQuantity = (productId: string, quantity: number) => {

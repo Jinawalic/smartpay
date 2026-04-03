@@ -63,7 +63,7 @@ export default function PublicCartPage() {
                                    <Plus className="h-4 w-4" />
                                 </button>
                              </div>
-                             <div className="font-bold text-lg">${(item.price * item.quantity).toLocaleString()}</div>
+                             <div className="font-bold text-lg">₦ {(item.price * item.quantity).toLocaleString()}</div>
                           </div>
                        </div>
                     </div>
@@ -87,15 +87,15 @@ export default function PublicCartPage() {
                    <CardContent className="space-y-4">
                       <div className="flex justify-between text-muted-foreground text-sm">
                          <span>Subtotal ({cart.length} items)</span>
-                         <span>${subtotal.toLocaleString()}</span>
+                         <span>₦ {subtotal.toLocaleString()}</span>
                       </div>
                       <div className="flex justify-between text-muted-foreground text-sm">
                          <span>Escrow Protection Fee</span>
-                         <span>${fee.toFixed(2)}</span>
+                         <span>₦ {fee.toFixed(2)}</span>
                       </div>
                       <div className="flex justify-between font-bold text-lg pt-4 border-t border-border mt-4">
                          <span>Total</span>
-                         <span className="text-primary">${total.toLocaleString(undefined, {minimumFractionDigits: 2})}</span>
+                         <span className="text-primary">₦ {total.toLocaleString(undefined, {minimumFractionDigits: 2})}</span>
                       </div>
                       
                       <div className="pt-6">
