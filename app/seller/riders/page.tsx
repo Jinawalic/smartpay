@@ -10,8 +10,11 @@ import { Badge } from "@/components/ui/Badge";
 import { Input } from "@/components/ui/Input";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useToast } from "@/components/ToastProvider";
+import { Suspense } from "react";
 
-export default function RidersPage() {
+export const dynamic = 'force-dynamic';
+
+function RidersPageContent() {
    const searchParams = useSearchParams();
    const orderId = searchParams.get("orderId");
    const router = useRouter();
@@ -193,5 +196,13 @@ export default function RidersPage() {
             </Card>
          </div>
       </div>
+   );
+}
+
+export default function RidersPage() {
+   return (
+      <Suspense fallback={<div>Loading...</div>}>
+         <RidersPageContent />
+      </Suspense>
    );
 }
