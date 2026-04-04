@@ -6,31 +6,19 @@ import { useRouter } from "next/navigation";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/Card";
 import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
-import { UserRole } from "@/lib/data";
 import { useUser } from "@/components/UserProvider";
-import { Tabs } from "@/components/ui/Tabs";
 
-export default function LoginPage() {
+export default function SellerLoginPage() {
   const router = useRouter();
   const { login } = useUser();
-  const [role, setRole] = React.useState<UserRole>("rider");
   const [isLoading, setIsLoading] = React.useState(false);
-
-  React.useEffect(() => {
-    const host = window.location.host;
-    if (host.includes('rider')) {
-      setRole('rider');
-    } else if (host.includes('admin')) {
-      setRole('admin');
-    }
-  }, []);
 
   const handleLogin = (e?: React.FormEvent) => {
     if (e) e.preventDefault();
     setIsLoading(true);
 
     // Call the login context
-    login(role);
+    login("seller");
 
     // Simulate authentication
     setTimeout(() => {
@@ -41,7 +29,7 @@ export default function LoginPage() {
       if (redirectUrl) {
         window.location.href = redirectUrl;
       } else {
-        window.location.href = `/${role}`;
+        window.location.href = `/seller`;
       }
     }, 1500);
   };
@@ -54,26 +42,15 @@ export default function LoginPage() {
           <h1 className="text-3xl font-bold bg-gradient-to-r from-primary to-indigo-600 bg-clip-text text-transparent">
             SmartPay Escrow
           </h1>
-          <p className="text-muted-foreground mt-2">Secure payments for staff</p>
+          <p className="text-muted-foreground mt-2">Secure payments for sellers</p>
         </div>
-
         <Card className="border-border shadow-xl shadow-primary/5">
           <CardHeader className="space-y-1 text-center">
-            <CardTitle className="text-2xl">Welcome back</CardTitle>
-            <CardDescription>Enter your email and password to login as staff</CardDescription>
+            <CardTitle className="text-2xl">Seller Login</CardTitle>
+            <CardDescription>Enter your email and password to login as a seller</CardDescription>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleLogin} className="space-y-4">
-              <div className="space-y-3 pt-2">
-                <label className="text-sm font-semibold text-slate-800">
-                  Choose your role
-                </label>
-                <Tabs
-                  tabs={["Rider", "Admin"]}
-                  activeTab={role.charAt(0).toUpperCase() + role.slice(1)}
-                  onTabChange={(tab) => setRole(tab.toLowerCase() as UserRole)}
-                />
-              </div>
               <div className="space-y-2">
                 <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
                   Email
@@ -91,9 +68,6 @@ export default function LoginPage() {
                 </div>
                 <Input type="password" defaultValue="password123" required />
               </div>
-
-
-
               <Button type="submit" className="w-full mt-6" size="lg" isLoading={isLoading}>
                 {isLoading ? "Signing in..." : "Sign In"}
               </Button>

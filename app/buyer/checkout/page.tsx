@@ -25,9 +25,27 @@ export default function CheckoutPage() {
    const [isProcessing, setIsProcessing] = React.useState(false);
    const [isSuccess, setIsSuccess] = React.useState(false);
    const [trackingCode, setTrackingCode] = React.useState("");
+   const [paystackReady, setPaystackReady] = React.useState(false);
 
    const subtotal = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
    const total = subtotal;
+
+   React.useEffect(() => {
+      if (typeof window === "undefined") return;
+      if ((window as any).PaystackPop) {
+         setPaystackReady(true);
+         return;
+      }
+      const script = document.createElement("script");
+      script.src = "https://js.paystack.co/v1/inline.js";
+      script.async = true;
+      script.onload = () => setPaystackReady(true);
+      script.onerror = () => setPaystackReady(false);
+      document.body.appendChild(script);
+      return () => {
+         document.body.removeChild(script);
+      };
+   }, []);
 
    const saveAddress = () => {
       setAddress(tempAddress);
@@ -41,15 +59,41 @@ export default function CheckoutPage() {
 
    const handlePayment = (e: React.FormEvent) => {
       e.preventDefault();
+
+      if (!paystackReady || typeof window === "undefined" || !(window as any).PaystackPop) {
+         alert("Paystack gateway is not loaded yet. Please try again in a moment.");
+         return;
+      }
+
       setIsProcessing(true);
 
-      // Simulate Paystack processing
-      setTimeout(() => {
-         setIsProcessing(false);
-         const code = "TXN-" + Math.random().toString(36).substring(2, 8).toUpperCase();
-         setTrackingCode(code);
-         setIsSuccess(true);
-      }, 2000);
+      const reference = `SP-${Date.now()}-${Math.random().toString(36).slice(2, 8).toUpperCase()}`;
+      const handler = (window as any).PaystackPop.setup({
+         key: "pk_test_6aed518f320cf74c905058e0ee94d445bca28100",
+         email: "titus.jinawa@example.com",
+         amount: Math.round(total * 100),
+         currency: "NGN",
+         ref: reference,
+         metadata: {
+            custom_fields: [
+               { display_name: "Customer Name", variable_name: "customer_name", value: address.name },
+               { display_name: "Delivery Address", variable_name: "delivery_address", value: `${address.street}, ${address.city}, ${address.state}` }
+            ]
+         },
+         onClose: () => {
+            setIsProcessing(false);
+            alert("Payment window closed. Please retry if you did not complete payment.");
+         },
+         callback: (response: any) => {
+            setIsProcessing(false);
+            const code = response?.reference || reference;
+            setTrackingCode(code);
+            setIsSuccess(true);
+            clearCart();
+         }
+      });
+
+      handler.openIframe();
    };
 
    // Snapshot of cart for the invoice
